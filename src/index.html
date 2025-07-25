@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="version" content="1.0.0">
+		<title>CursR Client</title>
+		<meta name="author" content="Toby Butchart">
+		<meta name="description" content="Use a mobile device as a laser pointer">
+		<meta name="subject" content="CursR Client">
+		<meta name="application-name" content="CursR Client">
+		<meta name="theme-color" content="#008080">
+		<meta name="msapplication-TileColor" content="#008080">
+		<meta property="og:url" content="">
+		<meta property="og:locale" content="en">
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="CursR Client">
+		<meta property="og:image" content="img/icons/android-chrome-512x512.png">
+		<meta property="og:image:alt" content="CursR Client">
+		<meta property="og:description" content="Use a mobile device as a laser pointer">
+		<meta property="og:site_name" content="CursR Client">
+		<meta property="article:author" content="Toby Butchart">
+		<meta name="twitter:url" content="">
+		<meta name="twitter:title" content="CursR Client">
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:description" content="Use a mobile device as a laser pointer">
+		<meta name="twitter:image" content="/img/icons/android-chrome-512x512.png">
+		<meta name="twitter:image:alt" content="CursR Client">
+		<link rel="apple-touch-icon-precomposed" href="img/icons/favicon-32x32.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="img/icons/apple-touch-icon.png">
+		<link rel="icon" type="image/png" href="img/icons/favicon-16x16.png" sizes="16x16">
+		<link rel="icon" type="image/png" href="img/icons/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="img/icons/apple-touch-icon.png" sizes="180x180">
+		<link rel="icon" type="image/png" href="img/icons/android-chrome-192x192.png" sizes="192x192">
+		<link rel="icon" type="image/png" href="img/icons/android-chrome-512x512.png" sizes="512x512">
+		<link rel="shortcut icon" href="img/icons/favicon-32x32.png">
+		<link rel="icon" type="image/png" href="img/icons/favicon-32x32.png">
+		<!--[if IE]><link rel="SHORTCUT ICON" href="img/icons/favicon.ico"/><![endif]-->
+		<link rel="stylesheet" href="css/style.min.css?v=1.0.0">
+	</head>
+	<body>
+		<label for="serverIpAddress">ServerIpAddress</label>
+		<br>
+		<input type="text" id="serverIpAddress" name="serverIpAddress" value="192.168.0.89">
+		<br>
+		<label for="serverPort">ServerPort</label>
+		<br>
+		<input type="text" id="serverPort" name="serverPort" value="57252">
+		<br>
+		<button onclick="webSocketOpen()">webSocketOpen</button>
+		<br>
+		<label for="message">message</label>
+		<br>
+		<textarea id="message" name="message" rows="10" cols="100"></textarea>
+		<br>
+		<button onclick="sendMessage()">sendMessage</button>
+		<br>
+		<button onclick="close()">close</button>
+		<br>
+		<label for="clickState">clickState</label>
+		<br>
+		<select name="clickState" id="clickState">
+			<option selected="selected" value="None">None</option>
+			<option value="LeftClick">LeftClick</option>
+			<option value="RightClick">RightClick</option>
+		</select>
+		<br>
+		<label for="customCommand">customCommand</label>
+		<br>
+		<select name="customCommand" id="customCommand">
+			<option value="NoCommand">NoCommand</option>
+			<option value="ClickStart">ClickStart</option>
+			<option selected="selected" value="Move">Move</option>
+		</select>
+		<br>
+		<label for="cursorType">cursorType</label>
+		<br>
+		<select name="cursorType" id="cursorType">
+			<option selected="selected" value="Default">Default</option>
+			<option value="CursR">CursR</option>
+			<option value="Crosshair">Crosshair</option>
+		</select>
+		<br>
+		<button onclick="addClientData()">addClientData</button>
+		<br>
+		<button onclick="dumpWebSocket()">dumpWebSocket</button>
+		<br>
+		<button onclick="dumpClientData()">dumpClientData</button>
+		<br>
+		<button onclick="dumpClientDataHistory()">dumpClientDataHistory</button>
+		<br>
+		<button onclick="dumpGysroscopeHistory()">dumpGysroscopeHistory</button>
+		<br>
+		<button onclick="recreateBetaBug()">recreateBetaBug</button>
+		<br>
+		<label for="startTimer">startTimer</label>
+		<br>
+		<input type="checkbox" id="startTimer" name="startTimer" onclick="startTimer()">
+		<br>
+		<label for="frequency">frequency</label>
+		<br>
+		<input type="number" id="frequency" name="frequency" min="10" max="5000" value="50">
+		<br>
+		<button onclick="calibrateCentre()">calibrateCentre</button>
+		<br>
+		<button onclick="zeroCentre()">zeroCentre</button>
+		<br>
+		<select name="boundarySize" id="boundarySize">
+			<option selected="selected" value="100">100%</option>
+			<option value="75">75%</option>
+			<option value="50">50%</option>
+			<option value="25">25%</option>
+		</select>
+		<br>
+		<button onclick="setBoundarySize()">setBoundarySize</button>
+		<br>
+		<label for="setFromGyroscope">setFromGyroscope</label>
+		<br>
+		<input type="checkbox" id="setFromGyroscope" name="setFromGyroscope" onclick="setFromGyroscope()">
+		<br>
+		<label for="log">Log</label>
+		<br>
+		<textarea id="log" name="log" rows="10" cols="100"></textarea>
+		<br>
+		<label for="receipt">Receipt</label>
+		<br>
+		<textarea id="receipt" name="receipt" rows="10" cols="100"></textarea>
+
+		<script type="text/javascript" src="js/script.min.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/clientData.min.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/uuid.min.js?v=1.0.0"></script>
+		<script type="text/javascript">
+			let webSocket;
+			let uuid = UUID.create();
+			let clientData = new ClientData(uuid, "none", "testChars", "move");
+			let clientDataHistory = [];
+
+			function log(message) {
+				const logElem = document.getElementById('log');
+
+				if (logElem) {
+					logElem.value += `[${new Date()}] [${message}]\n`;
+				}
+			}
+
+			function webSocketOpen() {
+	            if ("WebSocket" in window) {
+					if (!webSocket || webSocket.readyState != WebSocket.OPEN) {
+						let protocol = "wss";
+
+						if (window.location.protocol != "https:") {
+							protocol = "ws";
+					   }
+
+						const ip = document.getElementById('serverIpAddress').value;
+						const port = document.getElementById('serverPort').value;
+
+						try {
+							webSocket = new WebSocket(`${protocol}://${ip}:${port}`);
+						} catch(err) {
+							log("Error... " + err);
+							return;
+						}
+
+						webSocket.onerror = function (event) {
+							log("Error... " + event.data);
+						};
+
+		                webSocket.onopen = function () {
+		                    log("Connection opened...");
+		                };
+
+		                webSocket.onmessage = function (event) {
+		                	log("Message received... " + event.data);
+
+							const data = JSON.parse(event.data);
+							let receipt = `receipt:\n`;
+							receipt += `  clientId: ${data.clientId}\n`;
+							receipt += `  response: ${data.response}\n`;
+							receipt += `  messageReceived: ${data.messageReceived}\n`;
+							receipt += `  receiptSent: ${data.receiptSent}\n`;
+							receipt += `connection:\n`;
+							receipt += `  clientIp: ${data.connection.clientIp}\n`;
+							receipt += `  clientPort: ${data.connection.clientPort}\n`;
+							receipt += `  serverIp: ${data.connection.serverIp}\n`;
+							receipt += `  serverPort: ${data.connection.serverPort}\n`;
+							receipt += `  dateTime: ${data.connection.dateTime}\n`;
+
+							document.getElementById('receipt').value = receipt;
+		                };
+
+		                webSocket.onclose = function () {
+		                    log("Connection closed...");
+		                };
+					}
+	            } else {
+					log("Error... This browser does not support websockets");
+				}
+	        }
+
+			function intToReadyState(int) {
+				let ret = "UNDEFINED";
+
+				switch(int) {
+					case 0:
+						ret = "CONNECTING";
+						break;
+					case 1:
+						ret = "OPEN";
+						break;
+					case 2:
+						ret = "CLOSING";
+						break;
+					case 3:
+						ret = "CLOSED";
+						break;
+				}
+
+				return ret;
+			}
+
+			function sendMessage() {
+				if (!webSocket) {
+					log("Error... websocket does not exist");
+				//} else if (webSocket.readyState != WebSocket.OPEN) {
+				//	log(`Error... websocket is not in readyState OPEN. Current readyState: ${intToReadyState(webSocket.readyState)}`);
+				} else {
+					try {
+						const msg = document.getElementById('message').value;
+						webSocket.send(msg);
+						log("Message sent");
+					} catch(err) {
+						log("Error... " + err);
+						return;
+					}
+				}
+			}
+
+			function close() {
+				if (webSocket) {
+					webSocket.close();
+				} else {
+					log("Error... websocket does not exist");
+				}
+			}
+
+			function addToClientDataHistory() {
+				const copy = structuredClone(clientData);
+				clientDataHistory.push(copy);
+			}
+
+			function clientDataToTextArea() {
+				addToClientDataHistory();
+				document.getElementById('message').value = JSON.stringify(clientData, null, 2);
+			}
+
+			function addClientData(alpha, beta, gamma) {
+				clientData.clickState = document.getElementById("clickState").value
+				clientData.customCommand = document.getElementById("customCommand").value
+				clientData.settings.cursorType = document.getElementById("cursorType").value
+
+				clientData.gyroscopeData.alpha = alpha || alpha == 0 ? alpha : Math.floor(Math.random() * 360);
+				clientData.gyroscopeData.beta = beta || beta == 0 ? beta : Math.floor(Math.random() * 360) - 180;
+				clientData.gyroscopeData.gamma = gamma || gamma == 0 ? gamma : Math.floor(Math.random() * 180) - 90;
+
+				clientDataToTextArea();
+			}
+
+			function calibrateCentre() {
+				clientData.setCentre();
+				clientDataToTextArea();
+			}
+
+			function zeroCentre() {
+				clientData.settings.alphaCentre = 0;
+				clientData.settings.betaCentre = 0;
+				clientData.settings.gammaCentre = 0;
+			}
+
+			function setBoundarySize() {
+				const percentage = document.getElementById("boundarySize").value / 100;
+
+				const alphaMiddle = Math.round((clientData.settings.alphaMin + clientData.settings.alphaMax) / 2);
+				const betaMiddle = Math.round((clientData.settings.betaMin + clientData.settings.betaMax) / 2);
+
+				const alphaRange = Math.abs(clientData.settings.alphaMin - clientData.settings.alphaMax);
+				const betaRange = Math.abs(clientData.settings.betaMin - clientData.settings.betaMax);
+
+				const alphaOffset = Math.round((alphaRange / 2) * percentage);
+				const betaOffset = Math.round((betaRange / 2) * percentage);
+
+				console.log(percentage, alphaMiddle, alphaRange, alphaOffset);
+				console.log(percentage, betaMiddle, betaRange, betaOffset);
+
+				clientData.settings.boundaries.left = (alphaMiddle - alphaOffset);
+				clientData.settings.boundaries.top = (betaMiddle + betaOffset);
+				clientData.settings.boundaries.right = (alphaMiddle + alphaOffset);
+				clientData.settings.boundaries.bottom = (betaMiddle - betaOffset);
+
+				clientDataToTextArea();
+			}
+
+			function dumpWebSocket() {
+				console.log(webSocket);
+			}
+
+			function dumpClientData() {
+				console.log(clientData);
+			}
+
+			function dumpClientDataHistory() {
+				console.log(clientDataHistory);
+			}
+
+			function dumpGysroscopeHistory(includeGamma) {
+				clientDataHistory.forEach(function (item, index) {
+					let log = `--------${index}--------\n`;
+					log += `  alpha: ${item.gyroscopeData.alpha}\n`;
+					log += `  beta: ${item.gyroscopeData.beta}\n`;
+
+					if (includeGamma)
+						log += `  gamma: ${item.gyroscopeData.gamma}\n`;
+
+					console.log(log);
+				});
+			}
+
+			function recreateBetaBug() {
+				window.betaIncrementing = false;
+				clientData.gyroscopeData.beta = 10;
+			}
+
+			window.alphaIncrementing = true;
+			window.betaIncrementing = true;
+
+			function simulateMovement() {
+				let alpha = clientData.gyroscopeData.alpha;
+				let beta = clientData.gyroscopeData.beta;
+
+				if (alpha > clientData.settings.alphaMax) {
+					window.alphaIncrementing = false;
+				} else if (alpha < clientData.settings.alphaMin) {
+					window.alphaIncrementing = true;
+				}
+
+				if (window.alphaIncrementing) {
+					alpha++;
+				} else {
+					alpha--;
+				}
+
+				if (beta > clientData.settings.betaMax) {
+					window.betaIncrementing = false;
+				} else if (beta < clientData.settings.betaMin) {
+					window.betaIncrementing = true;
+				}
+
+				if (window.betaIncrementing) {
+					beta++;
+				} else {
+					beta--;
+				}
+
+				addClientData(alpha, beta);
+				sendMessage();
+				//startTimer();
+			}
+
+			function startTimer() {
+				const enabled = document.getElementById("startTimer").checked;
+
+				if (enabled) {
+					const frequency = document.getElementById("frequency").value;
+					window.timer = setInterval(simulateMovement, frequency);
+					//setTimeout(simulateMovement, frequency);
+				} else {
+					clearTimeout(window.timer);
+				}
+			}
+
+			function handleDeviceOrientation(event) {
+				let alpha = clientData.gyroscopeData.alpha;
+				let beta = clientData.gyroscopeData.beta;
+				let gamma = clientData.gyroscopeData.gamma;
+
+				if (event.alpha != null)
+					alpha = event.alpha;
+
+				if (event.beta != null)
+					beta = event.beta;
+
+				if (event.gamma != null)
+					gamma = event.gamma;
+
+				addClientData(alpha, beta, gamma);
+			}
+
+			function setFromGyroscope() {
+				const enabled = document.getElementById("setFromGyroscope").checked;
+
+				if (enabled) {
+					if ("DeviceOrientationEvent" in window) {
+						window.addEventListener("deviceorientation", handleDeviceOrientation);
+					} else {
+						log("Error... This browser does not support DeviceOrientation");
+					}
+				} else {
+					window.removeEventListener("deviceorientation", handleDeviceOrientation);
+				}
+			}
+
+			addClientData();
+		</script>
+	</body>
+</html>
